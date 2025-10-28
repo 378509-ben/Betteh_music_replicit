@@ -1,5 +1,7 @@
-import { type User, type InsertUser, type Contact, type InsertContact } from "@shared/schema";
+import { type User, type InsertUser, type Contact, type InsertContact, users, contacts } from "@shared/schema";
 import { randomUUID } from "crypto";
+import { db } from "./db";
+import { eq } from "drizzle-orm";
 
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
@@ -12,56 +14,44 @@ export interface IStorage {
   getContact(id: string): Promise<Contact | undefined>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<string, User>;
-  private contacts: Map<string, Contact>;
-
-  constructor() {
-    this.users = new Map();
-    this.contacts = new Map();
-  }
-
+export class DatabaseStorage implements IStorage {
   async getUser(id: string): Promise<User | undefined> {
-    return this.users.get(id);
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user;
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user;
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const id = randomUUID();
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
+    const [user] = await db.insert(users).values(insertUser).returning();
     return user;
   }
 
   async createContact(insertContact: InsertContact): Promise<Contact> {
-    const id = randomUUID();
-    const contact: Contact = {
-      id,
+    const contactData = {
       name: insertContact.name,
       email: insertContact.email,
       phone: insertContact.phone || null,
       eventType: insertContact.eventType || null,
       message: insertContact.message,
-      createdAt: new Date(),
     };
-    this.contacts.set(id, contact);
+    
+    const [contact] = await db.insert(contacts).values(contactData).returning();
     return contact;
   }
 
   async getContacts(): Promise<Contact[]> {
-    return Array.from(this.contacts.values()).sort(
-      (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
-    );
+    const allContacts = await db.select().from(contacts).orderBy(contacts.createdAt);
+    return allContacts.reverse(); // Most recent first
   }
 
   async getContact(id: string): Promise<Contact | undefined> {
-    return this.contacts.get(id);
+    const [contact] = await db.select().from(contacts).where(eq(contacts.id, id));
+    return contact;
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();
