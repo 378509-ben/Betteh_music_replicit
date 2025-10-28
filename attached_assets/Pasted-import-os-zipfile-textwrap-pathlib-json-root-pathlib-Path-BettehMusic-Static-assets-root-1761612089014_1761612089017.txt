@@ -1,0 +1,75 @@
+import os, zipfile, textwrap, pathlib, json
+
+root = pathlib.Path("BettehMusic_Static")
+assets = root / "assets"
+root.mkdir(exist_ok=True)
+assets.mkdir(parents=True, exist_ok=True)
+
+# HTML files
+pages = {
+    "index.html": "<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width,initial-scale=1.0'><title>Betteh Music</title><link rel='icon' href='assets/guitar.svg'><link rel='stylesheet' href='styles.css'><script defer src='script.js'></script></head><body><div id='preloader'><p>Loading the vibe... please wait 🎧</p></div><header><h1>Betteh Music</h1><nav><a href='index.html'>Home</a><a href='about.html'>About</a><a href='entertainment.html'>Entertainment</a><a href='gallery.html'>Gallery</a><a href='staff.html'>Staff</a><a href='contact.html'>Contact</a></nav></header><section class='hero'><h2>Feel the Rhythm — Live the Music</h2><button id='musicBtn'>🎧 Launch Music</button></section><footer>© 2025 Betteh Music — All Rights Reserved</footer></body></html>",
+    "about.html": "<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width,initial-scale=1.0'><title>About - Betteh Music</title><link rel='icon' href='assets/guitar.svg'><link rel='stylesheet' href='styles.css'><script defer src='script.js'></script></head><body><header><h1>About Betteh Music</h1><nav><a href='index.html'>Home</a><a href='about.html'>About</a><a href='entertainment.html'>Entertainment</a><a href='gallery.html'>Gallery</a><a href='staff.html'>Staff</a><a href='contact.html'>Contact</a></nav></header><main><h2>Our Story</h2><p>Betteh Music is a creative hub for live-band performances, events, and music promotion. Our goal is to unite talent, sound, and rhythm in one space — where every beat tells a story.</p></main><footer>© 2025 Betteh Music — All Rights Reserved</footer></body></html>",
+    "entertainment.html": "<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width,initial-scale=1.0'><title>Entertainment - Betteh Music</title><link rel='icon' href='assets/guitar.svg'><link rel='stylesheet' href='styles.css'><script defer src='script.js'></script></head><body><header><h1>Entertainment</h1><nav><a href='index.html'>Home</a><a href='about.html'>About</a><a href='entertainment.html'>Entertainment</a><a href='gallery.html'>Gallery</a><a href='staff.html'>Staff</a><a href='contact.html'>Contact</a></nav></header><main><p>Explore the latest in live music, events, and entertainment culture with Betteh Music. Stay tuned for upcoming shows and features!</p></main><footer>© 2025 Betteh Music — All Rights Reserved</footer></body></html>",
+    "gallery.html": "<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width,initial-scale=1.0'><title>Gallery - Betteh Music</title><link rel='icon' href='assets/guitar.svg'><link rel='stylesheet' href='styles.css'><script defer src='script.js'></script></head><body><header><h1>Gallery</h1><nav><a href='index.html'>Home</a><a href='about.html'>About</a><a href='entertainment.html'>Entertainment</a><a href='gallery.html'>Gallery</a><a href='staff.html'>Staff</a><a href='contact.html'>Contact</a></nav></header><main><h2>Gallery Coming Soon</h2><p>Stay tuned for photos and highlights from our live performances and backstage moments.</p></main><footer>© 2025 Betteh Music — All Rights Reserved</footer></body></html>",
+    "staff.html": "<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width,initial-scale=1.0'><title>Staff - Betteh Music</title><link rel='icon' href='assets/guitar.svg'><link rel='stylesheet' href='styles.css'><script defer src='script.js'></script></head><body><header><h1>Our Team</h1><nav><a href='index.html'>Home</a><a href='about.html'>About</a><a href='entertainment.html'>Entertainment</a><a href='gallery.html'>Gallery</a><a href='staff.html'>Staff</a><a href='contact.html'>Contact</a></nav></header><main><h2>Staff Coming Soon</h2><p>Meet our talented team soon!</p></main><footer>© 2025 Betteh Music — All Rights Reserved</footer></body></html>",
+    "contact.html": "<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width,initial-scale=1.0'><title>Contact - Betteh Music</title><link rel='icon' href='assets/guitar.svg'><link rel='stylesheet' href='styles.css'><script defer src='script.js'></script></head><body><header><h1>Contact Us</h1><nav><a href='index.html'>Home</a><a href='about.html'>About</a><a href='entertainment.html'>Entertainment</a><a href='gallery.html'>Gallery</a><a href='staff.html'>Staff</a><a href='contact.html'>Contact</a></nav></header><main><h2>Get in Touch</h2><p>Email: info@bettehmusic.com</p><p>Phone: +232 76 000 000</p><p>Location: Freetown, Sierra Leone</p></main><footer>© 2025 Betteh Music — All Rights Reserved</footer></body></html>"
+}
+
+for name, html in pages.items():
+    (root / name).write_text(html, encoding="utf-8")
+
+# styles.css
+(root / "styles.css").write_text(textwrap.dedent("""
+body {margin:0;font-family:Arial, sans-serif;background:linear-gradient(180deg,#030b1a,#071531);color:#fff;text-align:center}
+header {background:#050d22;padding:10px 0;position:sticky;top:0}
+nav a {color:#fff;margin:0 10px;text-decoration:none}
+.hero {padding:40px}
+footer {background:#050d22;padding:10px 0;margin-top:20px}
+#preloader{position:fixed;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#030b1a;color:#72bfff;font-size:1.2em;z-index:9999;animation:fadeOut 2s forwards 2s}
+@keyframes fadeOut {to{opacity:0;visibility:hidden}}
+#wave{position:fixed;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,#72bfff,#0ea5ff,#72bfff);animation:moveWave 6s linear infinite}
+@keyframes moveWave {0%{background-position-x:0}100%{background-position-x:1000px}}
+button{background:#0ea5ff;border:none;padding:10px 20px;color:#000;border-radius:6px;cursor:pointer}
+"""), encoding="utf-8")
+
+# script.js
+(root / "script.js").write_text(textwrap.dedent("""
+window.addEventListener('DOMContentLoaded',()=>{
+  document.body.insertAdjacentHTML('afterbegin','<div id="wave"></div>');
+  const btn=document.getElementById('musicBtn');
+  if(btn){
+    const audio=new Audio('assets/music.mp3');
+    btn.addEventListener('click',()=>{
+      if(audio.paused){audio.loop=true;audio.play();btn.textContent='🔇 Mute Music';}
+      else{audio.pause();btn.textContent='🎧 Launch Music';}
+    });
+  }
+});
+"""), encoding="utf-8")
+
+# assets
+(assets / "guitar.svg").write_text("<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='#72bfff'><path d='M3 21l6-6M13 11l8-8'/></svg>", encoding="utf-8")
+
+# dummy small audio file placeholder
+(assets / "music.mp3").write_bytes(b"FAKEAUDIO")  # replace with real sound later if desired
+
+# README
+(root / "README.txt").write_text("Upload to Netlify:\n1. Go to netlify.com > Add new site > Import project.\n2. Upload these files.\n3. Click Deploy.\n", encoding="utf-8")
+
+# ZIP
+zip_path = pathlib.Path("BettehMusic_Static.zip")
+with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
+    for f in root.rglob("*"):
+        zipf.write(f, f.relative_to(root.parent))
+print("✅ Created BettehMusic_Static.zip successfully!")
+""")
+
+---
+
+After you click **Run ▶️**, Replit will create the full site and print:  
+> ✅ Created BettehMusic_Static.zip successfully!  
+
+Then, you’ll see the ZIP appear in the **Files panel** on the left.  
+Click the **three dots → Download** and you’ll have your complete **Betteh Music static website** 🎸  
+
+Would you like me to also give you the quick **Netlify upload steps** next?
