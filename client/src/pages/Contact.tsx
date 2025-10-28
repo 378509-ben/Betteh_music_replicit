@@ -123,6 +123,7 @@ export default function Contact() {
                           <FormControl>
                             <Input
                               {...field}
+                              value={field.value || ''}
                               type="tel"
                               placeholder="(555) 123-4567"
                               data-testid="input-phone"

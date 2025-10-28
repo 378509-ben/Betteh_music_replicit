@@ -35,6 +35,8 @@ export const insertContactSchema = createInsertSchema(contacts).omit({
   email: z.string().email("Please enter a valid email address"),
   name: z.string().min(2, "Name must be at least 2 characters"),
   message: z.string().min(10, "Message must be at least 10 characters"),
+  phone: z.string().optional(),
+  eventType: z.string().optional(),
 });
 
 export type InsertContact = z.infer<typeof insertContactSchema>;
